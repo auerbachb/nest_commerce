@@ -3,7 +3,10 @@ import * as bcrypt from 'bcrypt';
 
 export const UserSchema = new mongoose.Schema({
     username: String,
-    password: String,
+    password: {
+        type: String,
+        select: false,
+    },
     seller: {
         type: Boolean,
         default: false
@@ -22,8 +25,7 @@ export const UserSchema = new mongoose.Schema({
     },
 });
 
-UserSchema.pre('save', async function (next:
-    mongoose.HookNextFunction) {
+UserSchema.pre('save', async function (next: mongoose.HookNextFunction) {
     try {
         if (!this.isModified('password')) {
             return next();
