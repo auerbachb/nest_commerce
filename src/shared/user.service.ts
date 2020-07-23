@@ -41,4 +41,9 @@ export class UserService {
                 HttpStatus.UNAUTHORIZED);
         }
     }
+
+    async findByPayload(payload: any) {
+        const { username } = payload;
+        return await this.userModel.findOne({ username });
+    }
 }
