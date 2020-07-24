@@ -16,6 +16,8 @@ lerna-debug.log*
 # Tests
 /coverage
 /.nyc_output
+# testing scripts file
+etl.js
 
 # IDEs and editors
 /.idea
