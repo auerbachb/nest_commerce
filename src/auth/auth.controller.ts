@@ -5,16 +5,21 @@ import { get } from 'http';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { Payload } from '../types/payload';
+import { User } from 'src/utilities/user.decorator';
+import { SellerGuard } from 'src/guards/seller.guard';
 
 @Controller('auth')
 export class AuthController {
-    constructor(private userService: UserService,
-        private authService: AuthService) { }
+    constructor(
+        private userService: UserService,
+        private authService: AuthService
+    ) { }
 
+    // TODO this route is for development only, remove later
     @Get()
-    @UseGuards(AuthGuard('jwt'))
-    tempAuth() {
-        return { auth: 'works' };
+    @UseGuards(AuthGuard('jwt'), SellerGuard)
+    async findAll(@User() user: any) {
+        return await this.userService.findAll();
     }
 
     @Post('login')
