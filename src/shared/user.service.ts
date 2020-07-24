@@ -9,16 +9,11 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
     constructor(@InjectModel('User') private userModel: Model<User>) { }
 
-    private sanitizeUser(user: User) {
-        return user.depopulate('password');
-    }
-
     async create(userDTO: RegisterDTO) {
         const { username } = userDTO;
         const user = await this.userModel.findOne({ username });
         if (user) {
-            throw new HttpException('User already exists',
-                HttpStatus.BAD_REQUEST);
+            throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
         }
 
         const createdUser = new this.userModel(userDTO);
@@ -28,12 +23,13 @@ export class UserService {
 
     async findByLogin(userDTO: LoginDTO) {
         const { username, password } = userDTO;
-        const user = await this.userModel.findOne({ username });
+        const user = await this.userModel
+            .findOne({ username })
+            .select('username password seller created address');
         if (!user) {
             throw new HttpException('Invalid credentials',
                 HttpStatus.UNAUTHORIZED);
         }
-
         if (await bcrypt.compare(password, user.password)) {
             return this.sanitizeUser(user);
         } else {
@@ -45,5 +41,11 @@ export class UserService {
     async findByPayload(payload: any) {
         const { username } = payload;
         return await this.userModel.findOne({ username });
+    }
+
+    sanitizeUser(user: User) {
+        const sanitized = user.toObject();
+        delete sanitized['password'];
+        return sanitized;
     }
 }
