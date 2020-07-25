@@ -20,7 +20,21 @@ describe('AUTH', () => {
     password: 'password'
   };
 
-  it('should register', () => {
+  const sellerRegister: RegisterDTO = {
+    username: 'seller',
+    password: 'password',
+    seller: true,
+  }
+
+  const sellerLogin: LoginDTO = {
+    username: 'seller',
+    password: 'password',
+  };
+
+  let userToken: string;
+  let sellerToken: string;
+
+  it('should register user', () => {
     return request(app)
       .post('/auth/register')
       .set('Accept', 'application/json')
@@ -29,6 +43,21 @@ describe('AUTH', () => {
         expect(body).toBeDefined();
         expect(body.user.username).toEqual('username');
         expect(body.user.password).toBeUndefined();
+        expect(body.user.seller).toBeFalsy();
+      })
+      .expect(HttpStatus.CREATED)
+  });
+
+  it('should register seller', () => {
+    return request(app)
+      .post('/auth/register')
+      .set('Accept', 'application/json')
+      .send(sellerRegister)
+      .expect(({ body }) => {
+        expect(body).toBeDefined();
+        expect(body.user.username).toEqual('seller');
+        expect(body.user.password).toBeUndefined();
+        expect(body.user.seller).toBeTruthy();
       })
       .expect(HttpStatus.CREATED)
   });
@@ -45,15 +74,32 @@ describe('AUTH', () => {
       .expect(HttpStatus.BAD_REQUEST)
   });
 
-  it('should login', () => {
+  it('should login user', () => {
     return request(app)
       .post('/auth/login')
       .set('Accept', 'application/json')
       .send(user)
       .expect(({ body }) => {
-        expect(body).toBeDefined();
+        userToken = body.token;
+        expect(body.token).toBeDefined();
         expect(body.user.username).toEqual('username');
         expect(body.user.password).toBeUndefined();
+        expect(body.user.seller).toBeFalsy();
+      })
+      .expect(HttpStatus.CREATED)
+  });
+
+  it('should login seller', () => {
+    return request(app)
+      .post('/auth/login')
+      .set('Accept', 'application/json')
+      .send(sellerLogin)
+      .expect(({ body }) => {
+        sellerToken = body.token;
+        expect(body.token).toBeDefined();
+        expect(body.user.username).toEqual('seller');
+        expect(body.user.password).toBeUndefined();
+        expect(body.user.seller).toBeTruthy();
       })
       .expect(HttpStatus.CREATED)
   });

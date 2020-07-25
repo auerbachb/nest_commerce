@@ -48,10 +48,4 @@ export class UserService {
         delete sanitized['password'];
         return sanitized;
     }
-
-    // TODO this method is for development only, remove later
-    async findAll() {
-        return await this.userModel.find().exec();
-    }
-
 }

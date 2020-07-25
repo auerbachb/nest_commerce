@@ -15,13 +15,6 @@ export class AuthController {
         private authService: AuthService
     ) { }
 
-    // TODO this route is for development only, remove later
-    @Get()
-    @UseGuards(AuthGuard('jwt'), SellerGuard)
-    async findAll(@User() user: any) {
-        return await this.userService.findAll();
-    }
-
     @Post('login')
     async login(@Body() userDTO: LoginDTO) {
         const user = await this.userService.findByLogin(userDTO);
